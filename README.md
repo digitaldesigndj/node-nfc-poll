@@ -32,7 +32,17 @@ sudo apt-get install libzmq3-dbg libzmq3-dev libzmq3
 npm install zerorpc
 ```
 
+# Install Coffee Script
+
 1. Coffee Script: `npm i -g coffee-script`
+
+
+# Start the Project
+
+1. Start LCD Server: `sudo python lcd.py` (@todo python deps...)
 1. `sudo` for raspi-gpio: `sudo -i` (-i lets us use NVM Node!)
 1. Start Node: `coffee index.coffee`
 
+# Wiring Diagram
+
+I'll post a picture or something here soonish...
