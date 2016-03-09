@@ -15,7 +15,7 @@ exec's 'nfc-list' in a loop and reports back nfc tag names
 
 ## Install ZeroRPC
 
-(On a Raspi 2B w/ Raspbian)
+(On a Raspberry Pi 2 B w/ Raspbian)
 
 [Don't Forget!](http://askubuntu.com/questions/365074/cannot-install-zeromq-package-from-chris-lea-zeromq-in-12-04/388770#388770)
 
