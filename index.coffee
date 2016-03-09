@@ -1,3 +1,5 @@
+async = require 'async'
+gpio = require 'rpi-gpio'
 zerorpc = require 'zerorpc'
 
 client = new (zerorpc.Client)
@@ -91,11 +93,13 @@ loopFunc = ->
         # console.log 'tick!'
       else
         # console.log tags
+        ledsOff()
         processTags tags
       oldTagsString = JSON.stringify tags
     else
       if !waiting
         console.log '0 Tags Found'
+        ledsOff()
         client.invoke 'message', 'NFC Wait...'
         waiting = true
         oldTagsString = []
@@ -122,10 +126,112 @@ processTags = ( tags ) ->
     if i + 1 isnt ourTags.length
       ourTags.push v
     return
-  console.log
+  ourTags.forEach ( tag ) ->
+    console.log tag
+    if tag is 'keychain'
+      gpio.write 40, true
+    if tag is 'Dr.Mario'
+      gpio.write 40, true
+    if tag is 'Luigi'
+      gpio.write 18, true
+      gpio.write 16, true
+      gpio.write 12, true
+    if tag is 'lightRed'
+      gpio.write 38, true
+    if tag is 'red'
+      gpio.write 36, true
+    if tag is 'orange'
+      gpio.write 32, true
+    if tag is 'yellow'
+      gpio.write 22, true
+    if tag is 'green'
+      gpio.write 18, true
+    if tag is 'lightGreen'
+      gpio.write 18, true
+    if tag is 'darkGreen'
+      gpio.write 18, true
+    if tag is 'Yoshi'
+      gpio.write 18, true
+    if tag is 'lightBlue'
+      gpio.write 16, true
+    if tag is 'skyBlue'
+      gpio.write 16, true
+    if tag is 'blue'
+      gpio.write 12, true
   client.invoke 'message', spliceSlice( ourTags.join( ' ' ), 16, 0, '\n' )
   return
 
+loopFunc()
+
+# gpio.setup 18, gpio.DIR_OUT, write
+#
+# write = ->
+#   console.log 'write!'
+
 # setInterval loopFunc, 500
 
-loopFunc()
+async.parallel [
+  ( callback ) ->
+    gpio.setup 12, gpio.DIR_OUT, callback
+    return
+  ( callback ) ->
+    gpio.setup 16, gpio.DIR_OUT, callback
+    return
+  ( callback ) ->
+    gpio.setup 18, gpio.DIR_OUT, callback
+    return
+  ( callback ) ->
+    gpio.setup 22, gpio.DIR_OUT, callback
+    return
+  ( callback ) ->
+    gpio.setup 32, gpio.DIR_OUT, callback
+    return
+  ( callback ) ->
+    gpio.setup 36, gpio.DIR_OUT, callback
+    return
+  ( callback ) ->
+    gpio.setup 38, gpio.DIR_OUT, callback
+    return
+  ( callback ) ->
+    gpio.setup 40, gpio.DIR_OUT, callback
+    return
+], ( err, results ) ->
+  console.log 'Pins set up, Testing...'
+  gpio.write 40, true, ->
+    setTimeout ->
+      gpio.write 40, false, ->
+        console.log 'Test complete'
+    , 5000
+  return
+
+ledsOff = ->
+  async.parallel [
+    ( callback ) ->
+      gpio.write 12, false, callback
+      return
+    ( callback ) ->
+      gpio.write 16, false, callback
+      return
+    ( callback ) ->
+      gpio.write 18, false, callback
+      return
+    ( callback ) ->
+      gpio.write 22, false, callback
+      return
+    ( callback ) ->
+      gpio.write 32, false, callback
+      return
+    ( callback ) ->
+      gpio.write 36, false, callback
+      return
+    ( callback ) ->
+      gpio.write 38, false, callback
+      return
+    ( callback ) ->
+      gpio.write 40, false, callback
+      return
+  ], ( err, results ) ->
+      # console.log 'lights out'
+    return
+
+# 12, 16, 18, 22, 32, 36, 38, 40
