@@ -1,13 +1,36 @@
+zerorpc = require 'zerorpc'
+
+client = new (zerorpc.Client)
+
+client.connect 'tcp://127.0.0.1:4242'
+
+client.on 'error', (error) ->
+  console.error 'RPC client error:', error
+  return
+
+client.invoke 'message', 'test Message!', (error, res, more) ->
+  if error
+    console.error error
+  else
+    console.log 'UPDATE:', res
+  if !more
+    console.log 'Done.'
+  return
+
+waiting = false
+
+oldTagsString = []
+
 spawn = require('child_process').spawn
 
 knownTags = [
-    name: 'yoshi'
+    name: 'Yoshi'
     id: '04  be  e9  2a  54  49  80'
   ,
-    name: 'luigi'
+    name: 'Luigi'
     id: '04  ce  da  d2  a0  40  80'
   ,
-    name: 'drMario'
+    name: 'Dr.Mario'
     id: '04  d9  61  72  b2  48  80'
   ,
     name: 'keychain'
@@ -50,7 +73,6 @@ knownTags = [
     id: 'd1  52  ee  cf'
 ]
 
-oldTagsString = []
 loopFunc = ->
   spawnLoop = spawn 'nfc-list'
   spawnLoop.stdout.on 'data', ( data ) ->
@@ -58,7 +80,7 @@ loopFunc = ->
     dataString = '' + data
     lines = dataString.split '\n'
     if lines.length isnt 3
-      'have tag(s)'
+      waiting = false
       console.log lines[2][0] + ' Tags Found'
       tagLines = lines.filter ( v, i ) ->
         if !v.indexOf '       UID (NFCID1):'
@@ -72,7 +94,11 @@ loopFunc = ->
         processTags tags
       oldTagsString = JSON.stringify tags
     else
-      console.log '0 Tags Found'
+      if !waiting
+        console.log '0 Tags Found'
+        client.invoke 'message', 'NFC Wait...'
+        waiting = true
+        oldTagsString = []
     return
   spawnLoop.stderr.on 'data', ( data ) ->
     console.log 'stderr: ' + data
@@ -81,6 +107,9 @@ loopFunc = ->
     # console.log 'child process exited with code' + code
     return loopFunc()
   return
+
+spliceSlice = (str, index, count, add) ->
+  str.slice(0, index) + (add or '') + str.slice(index + count)
 
 processTags = ( tags ) ->
   ourTags = []
@@ -93,7 +122,8 @@ processTags = ( tags ) ->
     if i + 1 isnt ourTags.length
       ourTags.push v
     return
-  console.log ourTags
+  console.log
+  client.invoke 'message', spliceSlice( ourTags.join( ' ' ), 16, 0, '\n' )
   return
 
 # setInterval loopFunc, 500
