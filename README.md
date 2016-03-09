@@ -13,12 +13,13 @@ exec's 'nfc-list' in a loop and reports back nfc tag names
 3. [This Tutorial] https://learn.adafruit.com/adafruit-nfc-rfid-on-raspberry-pi/overview
 
 
-Install ZeroRPC
+## Install ZeroRPC
 
+[Don't Forget!](http://askubuntu.com/questions/365074/cannot-install-zeromq-package-from-chris-lea-zeromq-in-12-04/388770#388770)
+
+```
 sudo add-apt-repository ppa:chris-lea/zeromq
 sudo apt-get update
 sudo apt-get install libzmq3-dbg libzmq3-dev libzmq3
 npm install zerorpc
-
-
-http://askubuntu.com/questions/365074/cannot-install-zeromq-package-from-chris-lea-zeromq-in-12-04/388770#388770
+```
