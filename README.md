@@ -45,4 +45,4 @@ npm install zerorpc
 
 # Wiring Diagram
 
-I'll post a picture or something here soonish...
+Sorry folks, check out the tutorial link above
